@@ -8,3 +8,5 @@ Além desse, foi usado o gemini.
 Para jogar o jogo, clique em start/pause. Além disso, use as setas do teclado para controlar a posição deseja do objeto.
 O jogo acaba, se o jogador deixar alguma das peças chegar ao topo.
 Ao completar uma linha. se pontua.
+
+Para interagir com a aplicação, abra o arquivo index.html no navegador.
