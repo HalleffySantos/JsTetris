@@ -1,7 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const grid = document.querySelector('.grid')
     let squares = Array.from(document.querySelectorAll('.grid div'));
+    
     const scoreDisplay = document.querySelector('#score');
+    let score = 0;
+    scoreDisplay.innerHTML = score;
+
     const startBtn = document.querySelector('#start-button');
     let timerId;
 
@@ -10,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const lTetromino = [
         [1, width+1, width*2+1, 2],
         [width, width+1, width+2, width*2+2],
+        [width, width*2, width*2+1, width*2+2],
         [width, width*2, width*2+1, width*2+2]
     ]
 
@@ -46,8 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
     //randonly select a tetromino and its rotation
     let currentPosition = 4;
     let currentRotation = 0;
-    var randomTetromino = Math.floor(Math.random()*theTetrominoes.length);
-    var nextRandomTetromino = 0;
+    let randomTetromino = Math.floor(Math.random()*theTetrominoes.length);
+    let nextRandomTetromino = 0;
 
     let currentTetromino = theTetrominoes[randomTetromino][currentRotation];
     
@@ -80,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         freeze();
     }
 
-    //freeze function
+    //freeze function, check if a row was completed and if a tetromino is in a taken space
     function freeze() {
         if (currentTetromino.some(index => squares[currentPosition + index + width].classList.contains('taken')))
         {
@@ -95,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
             draw();
             displayShape();
             addScore();
+            gameOver();
         }
     }
 
@@ -116,6 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         draw();
     }
 
+    //move the tetromino right, unless is at the edge is at the edge or there is a blockage
     function moveRight()
     {
         undraw();
@@ -133,14 +140,16 @@ document.addEventListener('DOMContentLoaded', () => {
         draw();
     }
 
+    //rotate the tetromino
     function rotate()
     {
         undraw();
-        currentRotation = (currentRotation+1)%4;
+        currentRotation = (currentRotation+1)%theTetrominoes[randomTetromino].length;
         currentTetromino = theTetrominoes[randomTetromino][currentRotation];
         draw();
     }
 
+    //check keyboard input
     function control(e)
     {
         switch(e.keyCode)
@@ -163,8 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    document.addEventListener('keyup', control);
-
     // show up-next tetromino in mini-grid display
     const displaySquares = document.querySelectorAll('.mini-grid div');
     const displayWidth = 4;
@@ -185,12 +192,51 @@ document.addEventListener('DOMContentLoaded', () => {
             square.classList.remove('tetromino');
         });
 
-        upNextTetrominoes[0].forEach(index =>
+        upNextTetrominoes[nextRandomTetromino].forEach(index =>
         {
             displaySquares[displayIndex + index].classList.add('tetromino');
         });
     }
 
+    //add Score
+    function addScore()
+    {
+        for (let j = 0; j < 199; j += width)
+        {
+            const row = [j, j+1, j+2, j+3, j+4, j+5, j+6, j+7, j+8, j+9];
+            
+            if (row.every(index => squares[index].classList.contains('taken'))) {
+                score += 10;
+                scoreDisplay.innerHTML = score;
+                
+                row.forEach(index => {
+                    squares[index].classList.remove('taken');
+                    squares[index].classList.remove('tetromino');
+                });
+
+                const squaresRemoved = squares.splice(j, width);
+                console.log(squaresRemoved);
+                squares = squaresRemoved.concat(squares);
+                squares.forEach(cell => grid.appendChild(cell))
+            }
+        }
+    }
+
+    // game over function
+    function gameOver()
+    {
+        if (currentTetromino.some(index => squares[currentPosition + index].classList.contains('taken')))
+        {
+            scoreDisplay.innerHTML = score + ' game over';
+            clearInterval(timerId); 
+        }
+    }
+
+    //downwards it the game instantiation
+    //get input for keyboard
+    document.addEventListener('keyup', control);
+
+    //start the game
     startBtn.addEventListener('click', () => {
         if (timerId)
         {
@@ -205,23 +251,5 @@ document.addEventListener('DOMContentLoaded', () => {
             displayShape();
         }
     });
-
-    //add Score
-    function addScore()
-    {
-        for (let i = 0; i < 199; i += width)
-        {
-            const row = [i, i+2, i+3, i+4, i+5, i+6, i+7, i+8, i+9];
-            if (row.every(index => squares[index].classList.contains('taken'))) {
-                score += 10;
-                scoreDisplay.innerHTML = score;
-                row.forEach(index => {
-                    squares[index].classList.remove('taken');
-                });
-            }
-            const squaresRemoved = squares.splice(i, width);
-            squares.forEach(cell => grid.appendChild(cell))
-        }
-    }
 
 });

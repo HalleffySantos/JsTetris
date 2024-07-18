@@ -2,7 +2,6 @@
     display: flex;
 }
 
-
 .grid {
     width: 200px;
     height: 400px;
@@ -16,8 +15,8 @@
     width: 20px;
 }
 
-.mini-grid {
-    margin-left: 50px;
+.mini-grid{
+    margin-left: 40px;
     width: 80px;
     height: 80px;
     display: flex;
@@ -25,17 +24,13 @@
     background-color: yellow;
 }
 
-.mini-grid div {
+.mini-grid div
+{
     height: 20px;
-    width: 20x;
+    width: 20px;
 }
 
 .tetromino
 {
     background-color: blue;
-}
-
-.mini-grid .tetromino
-{
-    background-color: green;
 }
